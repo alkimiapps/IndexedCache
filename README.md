@@ -1,0 +1,3 @@
+- Store by reference and store by value support
+- Pluggable JCache
+- Support serve stale via annotation
