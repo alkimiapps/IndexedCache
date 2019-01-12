@@ -52,7 +52,7 @@ public class CacheMaintainerTest {
                         .setStoreByValue(false)
                         .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.ONE_MINUTE));
         cacheWithObjectKeys = cacheManager.createCache("widgetKeyJCache", configurationForCacheWithWidgetKeys);
-        widgetStringCacheMaintainer = new CacheMaintainer<>(cacheWithObjectKeys, widgetCacheKeyMaker, new NonFinalClassUniqueCacheKeyMaker<>());
+        widgetStringCacheMaintainer = new CacheMaintainer<>(cacheWithObjectKeys, widgetCacheKeyMaker, new SubclassableClassUniqueCacheKeyMaker<>());
 
     }
 

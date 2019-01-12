@@ -10,6 +10,7 @@ import com.alkimiapps.indexedcache.UniqueCacheKeyMaker;
 import com.googlecode.cqengine.resultset.ResultSet;
 
 import javax.cache.Cache;
+import javax.cache.configuration.Configuration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public final class CacheMaintainer<K, V> {
     private Cache<K, V> cache;
     private CacheKeyMaker<K, V> cacheKeyMaker;
-    private UniqueCacheKeyMaker<K, V> uniqueCacheKeyMaker;
+    private UniqueCacheKeyMaker<K> uniqueCacheKeyMaker;
 
     private static final int DEFAULT_CORE_THREADS = 1;
     private static final int DEFAULT_MAX_THREADS = 1;
@@ -32,7 +33,7 @@ public final class CacheMaintainer<K, V> {
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(DEFAULT_CORE_THREADS, DEFAULT_MAX_THREADS, DEFAULT_THREAD_KEEP_ALIVE_SECONDS, TimeUnit.SECONDS, queue);
 
-    public CacheMaintainer(Cache<K, V> cache, CacheKeyMaker<K, V> cacheKeyMaker, UniqueCacheKeyMaker<K, V> uniqueCacheKeyMaker) {
+    public CacheMaintainer(Cache<K, V> cache, CacheKeyMaker<K, V> cacheKeyMaker, UniqueCacheKeyMaker<K> uniqueCacheKeyMaker) {
         this.cache = cache;
         this.cacheKeyMaker = cacheKeyMaker;
         this.uniqueCacheKeyMaker = uniqueCacheKeyMaker;
@@ -48,9 +49,10 @@ public final class CacheMaintainer<K, V> {
 
     public void registerCacheMiss() {
         // Registering a cache miss is a bit tricky because we need to create an instance of a key that will
-        // not be in the cache in order to generate a cache miss. That's when a NonFinalClassUniqueCacheKeyMaker comes in handy.
+        // not be in the cache in order to generate a cache miss. That's when a SubclassableClassUniqueCacheKeyMaker comes in handy.
         threadPoolExecutor.execute(() -> {
-            K uniqueCacheKey = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(cache);
+            Class<K> keyType = cache.getConfiguration(Configuration.class).getKeyType();
+            K uniqueCacheKey = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyType);
             if (cache.get(uniqueCacheKey) != null) {
                 throw new RuntimeException("Failed to generate a cache miss with cache key: " + uniqueCacheKey);
             }

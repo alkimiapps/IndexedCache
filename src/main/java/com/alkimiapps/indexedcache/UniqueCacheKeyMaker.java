@@ -10,6 +10,6 @@ import javax.cache.Cache;
 /**
  * A thing that makes unique keys (keys that will always miss on a call to Cache.get) for some cache.
  */
-public interface UniqueCacheKeyMaker<K, V> {
-    K makeUniqueCacheKeyForCache(Cache<K, V> cache);
+public interface UniqueCacheKeyMaker<K> {
+    K makeUniqueCacheKeyForCache(Class<K> keyType);
 }

@@ -18,22 +18,20 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
- * A UniqueCacheKeyMaker that can make unique cache keys for cache key classes that are non-final
+ * A UniqueCacheKeyMaker that can make unique cache keys for cache key classes that are non-final and that have at
+ * least one public or protected constructor.
  */
-public final class NonFinalClassUniqueCacheKeyMaker<K, V> implements UniqueCacheKeyMaker<K, V> {
-    public K makeUniqueCacheKeyForCache(Cache<K, V> cache) {
-        Configuration<K, V> cacheConfig = cache.getConfiguration(Configuration.class);
-        Class keyType = cacheConfig.getKeyType();
-
+public final class SubclassableClassUniqueCacheKeyMaker<K> implements UniqueCacheKeyMaker<K> {
+    public K makeUniqueCacheKeyForCache(Class<K> keyType) {
         MethodInterceptor methodInterceptor = new UniqueMethodInterceptor();
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(keyType);
         enhancer.setUseCache(false);
 
         enhancer.setCallbackType(methodInterceptor.getClass());
-        Class proxyClass = enhancer.createClass();
+        Class<K> proxyClass = enhancer.createClass();
         Enhancer.registerCallbacks(proxyClass, new Callback[]{methodInterceptor});
-        return (K) ObjenesisHelper.newInstance(proxyClass);
+        return ObjenesisHelper.newInstance(proxyClass);
     }
 
     private class UniqueMethodInterceptor implements MethodInterceptor {
