@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 /**
  * A com.googlecode.cqengine.IndexedCollection that marries CQEngine with JCache to provide an indexed cache i.e.
  * a cache on which indexes can be applied to perform fast complex queries as well as providing cache characteristics
- * such as expiry, limits and statistics.
+ * such as expiry and statistics.
  *
  * @param <K> cache key type
  * @param <V> cache value type

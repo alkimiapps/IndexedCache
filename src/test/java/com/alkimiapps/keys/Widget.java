@@ -12,6 +12,10 @@ public class Widget {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof Widget && ((Widget) o).name.equals(name);

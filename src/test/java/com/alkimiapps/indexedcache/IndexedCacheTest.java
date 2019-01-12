@@ -5,6 +5,7 @@
 
 package com.alkimiapps.indexedcache;
 
+import com.alkimiapps.keys.Widget;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
@@ -62,7 +63,7 @@ public class IndexedCacheTest {
     }
 
     @Test
-    public void add() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public void add() {
         Widget widget = new Widget("Frank");
         indexedCache.add(widget);
         Query<Widget> query = equal(Widget_Name, "Frank");
@@ -72,16 +73,6 @@ public class IndexedCacheTest {
         assertEquals("Frank", cache.get(cacheKeyMaker.makeKey(widget)).getName());
     }
 
-    private class Widget {
-        private String name;
-
-        private Widget(String name) {
-            this.name = name;
-        }
-        String getName() {
-            return name;
-        }
-    }
 
 //    private Widget testCreate() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 //        Class<com.alkimiapps.indexedcache.IndexedCacheTest.Widget> widgetClass = Class.forName("com.alkimiapps.indexedcache.IndexedCacheTest.Widget");
