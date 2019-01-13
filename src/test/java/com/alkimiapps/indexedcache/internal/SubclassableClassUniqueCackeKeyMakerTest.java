@@ -8,41 +8,29 @@ import static org.junit.Assert.assertNotEquals;
 public class SubclassableClassUniqueCackeKeyMakerTest {
     @Test
     public void testUniquenessWithPrivateAndPublicConstructorKeyClass() {
-        UniqueCacheKeyMaker<PrivateAndPublicConstructor> uniqueCacheKeyMaker = new SubclassableClassUniqueCacheKeyMaker<>();
-        PrivateAndPublicConstructor uniqueCacheKey1 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(PrivateAndPublicConstructor.class);
-        PrivateAndPublicConstructor uniqueCacheKey2 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(PrivateAndPublicConstructor.class);
-
-        assertNotEquals(uniqueCacheKey1, uniqueCacheKey2);
-        assertNotEquals(0, uniqueCacheKey1.hashCode());
-        assertNotEquals(0, uniqueCacheKey2.hashCode());
-        assertNotEquals(uniqueCacheKey1.hashCode(), uniqueCacheKey2.hashCode());
-
+        testUniquenessWithKeyClass(PrivateAndPublicConstructor.class);
     }
 
     @Test
     public void testUniquenessWithDefaultConstructorKeyClass() {
-        UniqueCacheKeyMaker<DefaultConstructor> uniqueCacheKeyMaker = new SubclassableClassUniqueCacheKeyMaker<>();
-        DefaultConstructor uniqueCacheKey1 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(DefaultConstructor.class);
-        DefaultConstructor uniqueCacheKey2 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(DefaultConstructor.class);
-
-        assertNotEquals(uniqueCacheKey1, uniqueCacheKey2);
-        assertNotEquals(0, uniqueCacheKey1.hashCode());
-        assertNotEquals(0, uniqueCacheKey2.hashCode());
-        assertNotEquals(uniqueCacheKey1.hashCode(), uniqueCacheKey2.hashCode());
-
+        testUniquenessWithKeyClass(DefaultConstructor.class);
     }
 
     @Test
     public void testUniquenessWithPrivateAndProtectedConstructorKeyClass() {
-        UniqueCacheKeyMaker<PrivateAndProtectedConstructor> uniqueCacheKeyMaker = new SubclassableClassUniqueCacheKeyMaker<>();
-        PrivateAndProtectedConstructor uniqueCacheKey1 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(PrivateAndProtectedConstructor.class);
-        PrivateAndProtectedConstructor uniqueCacheKey2 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(PrivateAndProtectedConstructor.class);
+        testUniquenessWithKeyClass(PrivateAndProtectedConstructor.class);
+    }
+
+    private <T> void testUniquenessWithKeyClass(Class<T> keyClass) {
+
+        UniqueCacheKeyMaker<T> uniqueCacheKeyMaker = new SubclassableClassUniqueCacheKeyMaker<>();
+        T uniqueCacheKey1 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyClass);
+        T uniqueCacheKey2 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyClass);
 
         assertNotEquals(uniqueCacheKey1, uniqueCacheKey2);
         assertNotEquals(0, uniqueCacheKey1.hashCode());
         assertNotEquals(0, uniqueCacheKey2.hashCode());
         assertNotEquals(uniqueCacheKey1.hashCode(), uniqueCacheKey2.hashCode());
-
     }
 
     public class PrivateAndPublicConstructor {
