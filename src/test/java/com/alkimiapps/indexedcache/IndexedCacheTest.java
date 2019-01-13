@@ -13,6 +13,7 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.radixreversed.ReversedRadixTreeIndex;
 import com.googlecode.cqengine.query.Query;
+import com.googlecode.cqengine.query.option.DeduplicationStrategy;
 import com.googlecode.cqengine.resultset.ResultSet;
 import org.junit.After;
 import org.junit.Before;
@@ -27,10 +28,16 @@ import javax.cache.expiry.Duration;
 import javax.cache.management.CacheStatisticsMXBean;
 import javax.cache.spi.CachingProvider;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static com.alkimiapps.cache.CacheInfo.cacheEntryCount;
 import static com.googlecode.cqengine.query.QueryFactory.*;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class IndexedCacheTest {
 
@@ -59,8 +66,14 @@ public class IndexedCacheTest {
 
     @After
     public void tearDown() {
-        cache.close();
+        if (!cache.isClosed()) {
+            cache.close();
+        }
     }
+
+    // todo test add/remove from cache also adds/removes from indexedCache
+    // todo test expiry
+    // todo set no stats when stats disabled
 
     @Test
     public void testGetCache() {
@@ -68,7 +81,7 @@ public class IndexedCacheTest {
     }
 
     @Test
-    public void add() {
+    public void testAdd() {
         Widget widget = new Widget("Frank");
         indexedCache.add(widget);
         Query<Widget> query = equal(Widget_Name, "Frank");
@@ -95,17 +108,7 @@ public class IndexedCacheTest {
 
         assertEquals(2, results.size());
 
-        CacheStatisticsMXBean stats = CacheStatsProvider.getCacheStatisticsMXBean(indexedCache.getCache().getName());
-        assertNotNull(stats);
-        Waiter.waitForValueWithTimeout(() -> {
-            if (stats.getCacheHits() > 0) {
-                return stats.getCacheHits();
-            } else {
-                return null;
-            }
-        }, 2L);
-        assertEquals(2, stats.getCacheHits());
-        assertEquals(0, stats.getCacheMisses());
+        testCacheOnlyHits(2);
     }
 
     @Test
@@ -124,23 +127,141 @@ public class IndexedCacheTest {
         ResultSet<Widget> results = indexedCache.retrieve(query);
 
         assertEquals(0, results.size());
-
+        indexedCache.retrieve(query);
+        indexedCache.retrieve(query);
         CacheStatisticsMXBean stats = CacheStatsProvider.getCacheStatisticsMXBean(indexedCache.getCache().getName());
         assertNotNull(stats);
         Waiter.waitForValueWithTimeout(() -> {
-            if (stats.getCacheMisses() > 0) {
+            if (stats.getCacheMisses() == 3) {
                 return stats.getCacheMisses();
             } else {
                 return null;
             }
-        }, 1L);
+        });
         assertEquals(0, stats.getCacheHits());
-        assertEquals(1, stats.getCacheMisses());
+        assertEquals(3, stats.getCacheMisses());
     }
 
-//    private Widget testCreate() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-//        Class<com.alkimiapps.indexedcache.IndexedCacheTest.Widget> widgetClass = Class.forName("com.alkimiapps.indexedcache.IndexedCacheTest.Widget");
-//        Widget instance = (Widget) Class.forName("com.alkimiapps.indexedcache.IndexedCacheTest.Widget").newInstance();
-//        return instance;
-//    }
+    @Test
+    public void testRetrieveWithOrderingOption() {
+
+        Widget frank = new Widget("Frank");
+        indexedCache.add(frank);
+
+        Widget bob = new Widget("Bob");
+        indexedCache.add(bob);
+
+        Widget jane = new Widget("Jane");
+        indexedCache.add(jane);
+
+        Query<Widget> query = or(contains(Widget_Name, "n"), startsWith(Widget_Name, "Bo"));
+        ResultSet<Widget> results = indexedCache.retrieve(query, queryOptions(orderBy(ascending(Widget_Name))));
+
+        assertEquals(3, results.size());
+        assertEquals("Bob", results.stream().findFirst().orElse(new Widget("not found")).getName());
+        assertEquals("Frank", results.stream().skip(1).findFirst().orElse(new Widget("not found")).getName());
+        assertEquals("Jane", results.stream().skip(2).findFirst().orElse(new Widget("not found")).getName());
+
+        testCacheOnlyHits(3);
+    }
+
+    @Test
+    public void testUpdateAddingAndRemovingObjects() {
+        Widget frank = new Widget("Frank");
+        Widget bob = new Widget("Bob");
+        Widget jane = new Widget("Jane");
+
+        List<Widget> widgets = Arrays.asList(frank, bob, jane);
+
+        // Adding
+        indexedCache.update(Collections.emptyList(), widgets);
+        assertEquals(3, cacheEntryCount(indexedCache.getCache()));
+        testCacheContents(widgets);
+
+        // Test idempotency...
+        indexedCache.update(Collections.emptyList(), widgets);
+        assertEquals(3, cacheEntryCount(indexedCache.getCache()));
+        testCacheContents(widgets);
+
+        // Removing
+        indexedCache.update(widgets, Collections.emptyList());
+        assertEquals(0, cacheEntryCount(indexedCache.getCache()));
+
+        // Test idempotency...
+        indexedCache.update(widgets, Collections.emptyList());
+        assertEquals(0, cacheEntryCount(indexedCache.getCache()));
+    }
+
+    @Test
+    public void testUpdateAddingAndRemovingObjectsAtTheSameTime() {
+        Widget frank = new Widget("Frank");
+        Widget bob = new Widget("Bob");
+        Widget jane = new Widget("Jane");
+        List<Widget> widgetsToAdd = Arrays.asList(frank, bob, jane);
+
+        Widget dave = new Widget("Dave");
+        Widget sally = new Widget("Sally");
+        Widget fred = new Widget("Fred");
+        List<Widget> widgetsToRemove = Arrays.asList(dave, sally, fred);
+
+        // Add objects to remove
+        indexedCache.update(Collections.emptyList(), widgetsToRemove);
+
+        // Remove and add
+        indexedCache.update(widgetsToRemove, widgetsToAdd);
+        assertEquals(3, cacheEntryCount(indexedCache.getCache()));
+        testCacheContents(widgetsToAdd);
+    }
+
+    @Test
+    public void testUpdateAddingAndRemovingObjectsWithOptions() {
+        Widget frank = new Widget("Frank");
+        Widget jane = new Widget("Jane");
+        Widget bob = new Widget("Bob");
+
+        List<Widget> widgets = Arrays.asList(frank, bob, jane);
+
+        indexedCache.update(Collections.emptyList(), widgets, queryOptions(enableFlags("flag")));
+        testCacheContents(widgets);
+        assertEquals(3, cacheEntryCount(indexedCache.getCache()));
+
+        Query<Widget> query = or(contains(Widget_Name, "n"), startsWith(Widget_Name, "Bo"));
+        ResultSet<Widget> results = indexedCache.retrieve(query);
+
+        assertEquals(3, results.size());
+    }
+
+    @Test
+    public void testSize() {
+        Widget frank = new Widget("Frank");
+        Widget jane = new Widget("Jane");
+        Widget bob = new Widget("Bob");
+
+        List<Widget> widgets = Arrays.asList(frank, bob, jane);
+        indexedCache.update(Collections.emptyList(), widgets);
+        assertEquals(3, indexedCache.size());
+    }
+
+    private void testCacheOnlyHits(int expectedHitCount) {
+
+        CacheStatisticsMXBean stats = CacheStatsProvider.getCacheStatisticsMXBean(indexedCache.getCache().getName());
+        assertNotNull(stats);
+        Waiter.waitForValueWithTimeout(() -> {
+            if (stats.getCacheHits() == expectedHitCount) {
+                return stats.getCacheHits();
+            } else {
+                return null;
+            }
+        });
+        assertEquals(expectedHitCount, stats.getCacheHits());
+        assertEquals(0, stats.getCacheMisses());
+    }
+
+    private void testCacheContents(List<Widget> list) {
+        assertTrue(indexedCache.containsAll(list));
+        for (Widget widget: list) {
+            Widget key = cacheKeyMaker.makeKey(widget);
+            assertEquals(widget, cache.get(key));
+        }
+    }
 }

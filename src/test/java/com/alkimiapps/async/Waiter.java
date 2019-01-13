@@ -12,13 +12,13 @@ public final class Waiter {
 
     private static final int DEFAULT_TIMEOUT_MILLIS = 2000;
 
-    public static <T> void waitForValueWithTimeout(Supplier<T> supplier, T expectedResult) {
-        Waiter.waitForValueWithTimeout(supplier, expectedResult, DEFAULT_TIMEOUT_MILLIS);
+    public static <T> void waitForValueWithTimeout(Supplier<T> supplier) {
+        Waiter.waitForValueWithTimeout(supplier, DEFAULT_TIMEOUT_MILLIS);
     }
 
-    private static <T> void waitForValueWithTimeout(Supplier<T> supplier, T expectedResult, int timeoutMillis) {
+    private static <T> void waitForValueWithTimeout(Supplier<T> supplier, int timeoutMillis) {
         Long start = new Date().getTime();
-        while((supplier.get() == null || !supplier.get().equals(expectedResult)) && new Date().getTime() - start < timeoutMillis) {
+        while(supplier.get() == null  && new Date().getTime() - start < timeoutMillis) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {

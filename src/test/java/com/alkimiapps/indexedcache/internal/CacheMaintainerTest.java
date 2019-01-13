@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.alkimiapps.cache.CacheInfo.cacheEntryCount;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -76,12 +77,12 @@ public class CacheMaintainerTest {
         when(resultSet.size()).thenReturn(values.size());
         widgetStringCacheMaintainer.registerCacheHits(resultSet);
         Waiter.waitForValueWithTimeout(() -> {
-            if (stats.getCacheHits() > 0) {
+            if (stats.getCacheHits() == 3) {
                 return stats.getCacheHits();
             } else {
                 return null;
             }
-        }, 3L);
+        });
         assertEquals(3, stats.getCacheHits());
         assertEquals(0, stats.getCacheMisses());
     }
@@ -99,12 +100,12 @@ public class CacheMaintainerTest {
         when(resultSet.iterator()).thenReturn(values.iterator());
         widgetStringCacheMaintainer.registerCacheMiss();
         Waiter.waitForValueWithTimeout(() -> {
-            if (stats.getCacheMisses() > 0) {
+            if (stats.getCacheMisses() == 1) {
                 return stats.getCacheMisses();
             } else {
                 return null;
             }
-        }, 1L);
+        });
         assertEquals(1, stats.getCacheMisses());
         assertEquals(0, stats.getCacheHits());
     }
@@ -115,7 +116,7 @@ public class CacheMaintainerTest {
         values.forEach(v -> widgetStringCacheMaintainer.objectWasAdded(v));
 
         widgetStringCacheMaintainer.indexCollectionWasUpdated(values, null);
-        assertEquals(0, cacheEntryCount());
+        assertEquals(0, cacheEntryCount(cacheWithObjectKeys));
     }
 
     @Test
@@ -123,7 +124,7 @@ public class CacheMaintainerTest {
         List<Widget> values = Arrays.asList(new Widget("Bob"), new Widget("Sally"), new Widget("Jane"));
 
         widgetStringCacheMaintainer.indexCollectionWasUpdated(null, values);
-        assertEquals(3, cacheEntryCount());
+        assertEquals(3, cacheEntryCount(cacheWithObjectKeys));
         assertEquals(new Widget("Bob"), cacheWithObjectKeys.get(widgetCacheKeyMaker.makeKey(new Widget("Bob"))));
         assertEquals(new Widget("Sally"), cacheWithObjectKeys.get(widgetCacheKeyMaker.makeKey(new Widget("Sally"))));
         assertEquals(new Widget("Jane"), cacheWithObjectKeys.get(widgetCacheKeyMaker.makeKey(new Widget("Jane"))));
@@ -152,7 +153,7 @@ public class CacheMaintainerTest {
         widgetStringCacheMaintainer.objectWasAdded(value);
 
         assertEquals(value, cacheWithObjectKeys.get(widgetCacheKeyMaker.makeKey(value)));
-        assertEquals(1, cacheEntryCount());
+        assertEquals(1, cacheEntryCount(cacheWithObjectKeys));
     }
 
     @Test
@@ -162,7 +163,7 @@ public class CacheMaintainerTest {
 
         assertEquals(value, cacheWithObjectKeys.get(widgetCacheKeyMaker.makeKey(value)));
         assertEquals(value, cacheWithObjectKeys.get(widgetCacheKeyMaker.makeKey(value)));
-        assertEquals(1, cacheEntryCount());
+        assertEquals(1, cacheEntryCount(cacheWithObjectKeys));
     }
 
     @Test
@@ -171,15 +172,7 @@ public class CacheMaintainerTest {
         widgetStringCacheMaintainer.objectWasAdded(value);
         widgetStringCacheMaintainer.objectWasRemoved(value);
         assertNull(cacheWithObjectKeys.get(widgetCacheKeyMaker.makeKey(value)));
-        assertEquals(0, cacheEntryCount());
-    }
-
-    private int cacheEntryCount() {
-        int count = 0;
-        for (Object ignored : cacheWithObjectKeys) {
-            count += 1;
-        }
-        return count;
+        assertEquals(0, cacheEntryCount(cacheWithObjectKeys));
     }
 }
 

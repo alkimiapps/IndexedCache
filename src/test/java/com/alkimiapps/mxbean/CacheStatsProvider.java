@@ -13,7 +13,7 @@ import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.util.Set;
 
-public class CacheStatsProvider {
+public final class CacheStatsProvider {
     public static CacheStatisticsMXBean getCacheStatisticsMXBean(final String cacheName) {
         final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName name;

@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The purpose of the CacheMaintainer is to allow a javax.cache.Cache in-sync with an IndexedCollection.
+ * The purpose of the CacheMaintainer is to keep a javax.cache.Cache in-sync with an IndexedCollection.
  * This is necessary in order to support cache statistics and to ensure that objects added or removed from an associated
  * IndexedCollection are also added/removed from the Cache.
  */
@@ -44,17 +44,21 @@ public final class CacheMaintainer<K, V> {
         // thready so that the resultSet can be returned to the caller without having to wait for this method
         // to complete
         threadPoolExecutor.execute(() -> resultSet.stream()
-                .forEach(v -> cache.get(cacheKeyMaker.makeKey(v))));
+                .forEach(v -> {
+                    if (!cache.isClosed()) {
+                        cache.get(cacheKeyMaker.makeKey(v));
+                    }
+                }));
     }
 
     public void registerCacheMiss() {
-        // Registering a cache miss is a bit tricky because we need to create an instance of a key that will
-        // not be in the cache in order to generate a cache miss. That's when a SubclassableClassUniqueCacheKeyMaker comes in handy.
         threadPoolExecutor.execute(() -> {
-            Class<K> keyType = cache.getConfiguration(Configuration.class).getKeyType();
-            K uniqueCacheKey = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyType);
-            if (cache.get(uniqueCacheKey) != null) {
-                throw new RuntimeException("Failed to generate a cache miss with cache key: " + uniqueCacheKey);
+            if (!cache.isClosed()) {
+                Class<K> keyType = cache.getConfiguration(Configuration.class).getKeyType();
+                K uniqueCacheKey = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyType);
+                if (cache.get(uniqueCacheKey) != null) {
+                    throw new RuntimeException("Failed to generate a cache miss with cache key: " + uniqueCacheKey);
+                }
             }
         });
     }
