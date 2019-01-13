@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public final class Waiter {
 
-    private static final int DEFAULT_TIMEOUT_MILLIS = 1000;
+    private static final int DEFAULT_TIMEOUT_MILLIS = 2000;
 
     public static <T> void waitForValueWithTimeout(Supplier<T> supplier, T expectedResult) {
         Waiter.waitForValueWithTimeout(supplier, expectedResult, DEFAULT_TIMEOUT_MILLIS);

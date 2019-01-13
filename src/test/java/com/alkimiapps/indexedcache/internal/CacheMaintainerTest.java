@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
@@ -66,6 +67,7 @@ public class CacheMaintainerTest {
         List<Widget> values = Arrays.asList(new Widget("Bob"), new Widget("Sally"), new Widget("Jane"));
         values.forEach(v -> widgetStringCacheMaintainer.objectWasAdded(v));
         CacheStatisticsMXBean stats = CacheStatsProvider.getCacheStatisticsMXBean(cacheWithObjectKeys.getName());
+        assertNotNull(stats);
         assertEquals(0, stats.getCacheHits());
         assertEquals(0, stats.getCacheMisses());
         ResultSet<Widget> resultSet = mock(ResultSet.class);
@@ -89,6 +91,7 @@ public class CacheMaintainerTest {
         // todo
         List<Widget> values = Collections.emptyList();
         CacheStatisticsMXBean stats = CacheStatsProvider.getCacheStatisticsMXBean(cacheWithObjectKeys.getName());
+        assertNotNull(stats);
         assertEquals(0, stats.getCacheHits());
         assertEquals(0, stats.getCacheMisses());
         ResultSet<Widget> resultSet = mock(ResultSet.class);

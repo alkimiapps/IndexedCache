@@ -38,8 +38,9 @@ public final class IndexedCache<K, V> implements IndexedCollection<V> {
     /**
      * Make a new IndexedCache based on an com.googlecode.cqengine.IndexedCollection and a javax.cache.Cache.
      *
-     * This constructor is only suitable when you want to inject the cache and the class of the cache key is non-final
-     * and has at least one public or protected constructor.
+     * This constructor is suitable when you want to inject the cache and the class of the cache key is non-final
+     * and has at least one public or protected constructor. Also if you don't enable statistics in your cache
+     * configuration then this constructor is suitable.
      *
      * Changes in the contents of the javax.cache.Cache performed outside this class are reflected in the
      * com.googlecode.cqengine.IndexedCollection.
@@ -62,8 +63,9 @@ public final class IndexedCache<K, V> implements IndexedCollection<V> {
     /**
      * Make a new IndexedCache based on an com.googlecode.cqengine.IndexedCollection and a javax.cache.Cache.
      *
-     * If your cache key class is a final class or has no public constructors and you want to inject the cache then
-     * use this constructor and provide a UniqueCacheKeyMaker that can make a unique key for your cache.
+     * If statistics are enabled for your cache and your cache key class is a final class or has no public constructors
+     * and you want to inject the cache then use this constructor and provide a UniqueCacheKeyMaker that can make a
+     * unique key for your cache.
      *
      * Changes in the contents of the javax.cache.Cache performed outside this class are reflected in the
      * com.googlecode.cqengine.IndexedCollection.
