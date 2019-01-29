@@ -31,6 +31,7 @@ import javax.cache.spi.CachingProvider;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static com.alkimiapps.cache.CacheInfo.cacheEntryCount;
 import static com.googlecode.cqengine.query.QueryFactory.*;
@@ -58,7 +59,7 @@ public class IndexedCacheTest {
                         .setTypes(Widget.class, Widget.class)
                         .setStoreByValue(false)
                         .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(MILLISECONDS, CACHE_TTL_MILLIS)));
-        cache = cacheManager.createCache("jCache", configuration);
+        cache = cacheManager.createCache(UUID.randomUUID().toString(), configuration);
         IndexedCollection<Widget> indexedCollection = new ConcurrentIndexedCollection<>();
         indexedCache = new IndexedCache<>(indexedCollection, cache, cacheKeyMaker);
         indexedCache.addIndex(ReversedRadixTreeIndex.onAttribute(Widget_Name));
@@ -66,7 +67,7 @@ public class IndexedCacheTest {
 
     @After
     public void tearDown() {
-        if (!cache.isClosed()) {
+        if (cache != null && !cache.isClosed()) {
             cache.close();
         }
     }

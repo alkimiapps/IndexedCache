@@ -7,7 +7,7 @@ package com.alkimiapps.indexedcache;
 
 import com.alkimiapps.indexedcache.internal.CacheMaintainer;
 import com.alkimiapps.indexedcache.internal.IndexedCacheEntryListenerConfiguration;
-import com.alkimiapps.indexedcache.internal.SubclassableClassUniqueCacheKeyMaker;
+import com.alkimiapps.indexedcache.internal.SubclassableClassUniqueInstanceMaker;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.index.Index;
 import com.googlecode.cqengine.query.Query;
@@ -57,14 +57,14 @@ public final class IndexedCache<K, V> implements IndexedCollection<V> {
      * safe to add/remove/update entries in the provided IndexedCollection outside of this class.
      */
     public IndexedCache(IndexedCollection<V> indexedCollection, Cache<K, V> cache, CacheKeyMaker<K, V> cacheKeyMaker) {
-        this(indexedCollection, cache, cacheKeyMaker, new SubclassableClassUniqueCacheKeyMaker<>());
+        this(indexedCollection, cache, cacheKeyMaker, new SubclassableClassUniqueInstanceMaker<>());
     }
 
     /**
      * Make a new IndexedCache based on an com.googlecode.cqengine.IndexedCollection and a javax.cache.Cache.
      *
      * If statistics are enabled for your cache and your cache key class is a final class or has no public constructors
-     * and you want to inject the cache then use this constructor and provide a UniqueCacheKeyMaker that can make a
+     * and you want to inject the cache then use this constructor and provide a UniqueInstanceMaker that can make a
      * unique key for your cache.
      *
      * Changes in the contents of the javax.cache.Cache performed outside this class are reflected in the
@@ -81,10 +81,10 @@ public final class IndexedCache<K, V> implements IndexedCollection<V> {
      * To recap: it is safe to add/remove/update entries in the Cache outside of this class if necessary. It is NOT
      * safe to add/remove/update entries in the provided IndexedCollection outside of this class.
      */
-    public IndexedCache(IndexedCollection<V> indexedCollection, Cache<K, V> cache, CacheKeyMaker<K, V> cacheKeyMaker, UniqueCacheKeyMaker<K> uniqueCacheKeyMaker) {
+    public IndexedCache(IndexedCollection<V> indexedCollection, Cache<K, V> cache, CacheKeyMaker<K, V> cacheKeyMaker, UniqueInstanceMaker<K> uniqueInstanceMaker) {
         this.indexedCollection = indexedCollection;
         this.cache = cache;
-        this.cacheMaintainer = new CacheMaintainer<>(cache, cacheKeyMaker, uniqueCacheKeyMaker);
+        this.cacheMaintainer = new CacheMaintainer<>(cache, cacheKeyMaker, uniqueInstanceMaker);
         cache.registerCacheEntryListener(new IndexedCacheEntryListenerConfiguration<>(indexedCollection));
     }
 

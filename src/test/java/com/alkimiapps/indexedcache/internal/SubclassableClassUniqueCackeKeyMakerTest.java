@@ -1,6 +1,6 @@
 package com.alkimiapps.indexedcache.internal;
 
-import com.alkimiapps.indexedcache.UniqueCacheKeyMaker;
+import com.alkimiapps.indexedcache.UniqueInstanceMaker;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotEquals;
@@ -23,9 +23,9 @@ public class SubclassableClassUniqueCackeKeyMakerTest {
 
     private <T> void testUniquenessWithKeyClass(Class<T> keyClass) {
 
-        UniqueCacheKeyMaker<T> uniqueCacheKeyMaker = new SubclassableClassUniqueCacheKeyMaker<>();
-        T uniqueCacheKey1 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyClass);
-        T uniqueCacheKey2 = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyClass);
+        UniqueInstanceMaker<T> uniqueInstanceMaker = new SubclassableClassUniqueInstanceMaker<>();
+        T uniqueCacheKey1 = uniqueInstanceMaker.makeUniqueInstance(keyClass);
+        T uniqueCacheKey2 = uniqueInstanceMaker.makeUniqueInstance(keyClass);
 
         assertNotEquals(uniqueCacheKey1, uniqueCacheKey2);
         assertNotEquals(0, uniqueCacheKey1.hashCode());

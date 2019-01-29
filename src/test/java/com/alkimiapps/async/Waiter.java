@@ -18,12 +18,20 @@ public final class Waiter {
 
     private static <T> void waitForValueWithTimeout(Supplier<T> supplier, int timeoutMillis) {
         Long start = new Date().getTime();
-        while(supplier.get() == null  && new Date().getTime() - start < timeoutMillis) {
+        while(supplier.get() == null && new Date().getTime() - start < timeoutMillis) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 // Don't care
             }
+        }
+    }
+
+    public static void justWaitMillis(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // Don't care
         }
     }
 }

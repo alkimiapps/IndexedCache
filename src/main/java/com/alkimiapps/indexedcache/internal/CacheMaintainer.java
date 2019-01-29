@@ -6,7 +6,7 @@
 package com.alkimiapps.indexedcache.internal;
 
 import com.alkimiapps.indexedcache.CacheKeyMaker;
-import com.alkimiapps.indexedcache.UniqueCacheKeyMaker;
+import com.alkimiapps.indexedcache.UniqueInstanceMaker;
 import com.googlecode.cqengine.resultset.ResultSet;
 
 import javax.cache.Cache;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public final class CacheMaintainer<K, V> {
     private Cache<K, V> cache;
     private CacheKeyMaker<K, V> cacheKeyMaker;
-    private UniqueCacheKeyMaker<K> uniqueCacheKeyMaker;
+    private UniqueInstanceMaker<K> uniqueInstanceMaker;
 
     private static final int DEFAULT_CORE_THREADS = 1;
     private static final int DEFAULT_MAX_THREADS = 1;
@@ -33,10 +33,10 @@ public final class CacheMaintainer<K, V> {
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(DEFAULT_CORE_THREADS, DEFAULT_MAX_THREADS, DEFAULT_THREAD_KEEP_ALIVE_SECONDS, TimeUnit.SECONDS, queue);
 
-    public CacheMaintainer(Cache<K, V> cache, CacheKeyMaker<K, V> cacheKeyMaker, UniqueCacheKeyMaker<K> uniqueCacheKeyMaker) {
+    public CacheMaintainer(Cache<K, V> cache, CacheKeyMaker<K, V> cacheKeyMaker, UniqueInstanceMaker<K> uniqueInstanceMaker) {
         this.cache = cache;
         this.cacheKeyMaker = cacheKeyMaker;
-        this.uniqueCacheKeyMaker = uniqueCacheKeyMaker;
+        this.uniqueInstanceMaker = uniqueInstanceMaker;
     }
 
     public void registerCacheHits(ResultSet<V> resultSet) {
@@ -55,7 +55,7 @@ public final class CacheMaintainer<K, V> {
         threadPoolExecutor.execute(() -> {
             if (!cache.isClosed()) {
                 Class<K> keyType = cache.getConfiguration(Configuration.class).getKeyType();
-                K uniqueCacheKey = uniqueCacheKeyMaker.makeUniqueCacheKeyForCache(keyType);
+                K uniqueCacheKey = uniqueInstanceMaker.makeUniqueInstance(keyType);
                 if (cache.get(uniqueCacheKey) != null) {
                     throw new RuntimeException("Failed to generate a cache miss with cache key: " + uniqueCacheKey);
                 }

@@ -5,27 +5,25 @@
 
 package com.alkimiapps.indexedcache.internal;
 
-import com.alkimiapps.indexedcache.UniqueCacheKeyMaker;
+import com.alkimiapps.indexedcache.UniqueInstanceMaker;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.objenesis.ObjenesisHelper;
 
-import javax.cache.Cache;
-import javax.cache.configuration.Configuration;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
- * A UniqueCacheKeyMaker that can make unique cache keys for cache key classes that are non-final and that have at
+ * A UniqueInstanceMaker that can make unique instances for classes that are non-final and that have at
  * least one public or protected constructor.
  */
-public final class SubclassableClassUniqueCacheKeyMaker<K> implements UniqueCacheKeyMaker<K> {
-    public K makeUniqueCacheKeyForCache(Class<K> keyType) {
+public final class SubclassableClassUniqueInstanceMaker<K> implements UniqueInstanceMaker<K> {
+    public K makeUniqueInstance(Class<K> instanceType) {
         MethodInterceptor methodInterceptor = new UniqueMethodInterceptor();
         Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(keyType);
+        enhancer.setSuperclass(instanceType);
         enhancer.setUseCache(false);
 
         enhancer.setCallbackType(methodInterceptor.getClass());
