@@ -1,6 +1,6 @@
 # WIP: IndexedCache
 
-A queryable object store for with caching qualities.
+A queryable object store with caching features.
 
 Provides an in-memory object cache (optionally with persistence) that supports a range of queries for cached objects - 
 i.e as opposed to simple key/value pair lookup.
