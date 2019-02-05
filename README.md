@@ -1,5 +1,7 @@
 # WIP: IndexedCache
 
+[![Build Status](https://travis-ci.com/alkimiapps/IndexedCache.svg?branch=master)](https://travis-ci.com/alkimiapps/IndexedCache)
+
 A queryable object store with caching features.
 
 Provides an in-memory object cache (optionally with persistence) that supports a range of queries for cached objects - 

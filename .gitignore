@@ -1,7 +1,6 @@
 .gradle
 .idea
 .idea/workspace.xml
-gradle
 build
 out
 .idea/workspace.xml
