@@ -1,6 +1,6 @@
 # WIP: IndexedCache
 
-[![Build Status](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master)](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master) [![Test Coverage](https://img.shields.io/codecov/c/github/alkimiapps/IndexedCache/master.svg)](https://codecov.io/github/alkimiapps/IndexedCache?branch=master)[![Maintainability](https://api.codeclimate.com/v1/badges/a9d61dd5d3bf86e54c6d/maintainability)](https://codeclimate.com/github/alkimiapps/IndexedCache/maintainability)
+[![Build Status](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master)](https://travis-ci.org/alkimiapps/IndexedCache?branch=master) [![Test Coverage](https://img.shields.io/codecov/c/github/alkimiapps/IndexedCache/master.svg)](https://codecov.io/github/alkimiapps/IndexedCache?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/a9d61dd5d3bf86e54c6d/maintainability)](https://codeclimate.com/github/alkimiapps/IndexedCache/maintainability) [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=alkimiapps/IndexedCache)](https://dependabot.com)
 
 A queryable object store with caching features.
 
