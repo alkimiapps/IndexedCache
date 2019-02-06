@@ -1,6 +1,6 @@
 # WIP: IndexedCache
 
-[![Build Status](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master)](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/alkimiapps/IndexedCache/badge.svg?branch=master)](https://coveralls.io/github/alkimiapps/IndexedCache?branch=master)
+[![Build Status](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master)](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master) [![Test Coverage](https://img.shields.io/codecov/c/github/alkimiapps/IndexedCache/master.svg)](https://codecov.io/github/alkimiapps/IndexedCache?branch=master)[![Maintainability](https://api.codeclimate.com/v1/badges/a9d61dd5d3bf86e54c6d/maintainability)](https://codeclimate.com/github/alkimiapps/IndexedCache/maintainability)
 
 A queryable object store with caching features.
 
@@ -76,6 +76,5 @@ TODO
 
 * More tests
 * EhCache 2 and 3 indexed caches in separate repos
-* Travis integration
 
 

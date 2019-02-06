@@ -38,3 +38,5 @@ jacocoTestReport {
         csv.enabled true
     }
 }
+
+check.dependsOn jacocoTestReport
