@@ -36,17 +36,29 @@ public final class SubclassableClassUniqueInstanceMaker<K> implements UniqueInst
 
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            if (method.getName().equals("hashCode") && method.getReturnType() == int.class && method.getParameterCount() == 0) {
+            if (isHashCodeMethod(method)) {
                 return UUID.randomUUID().hashCode();
             }
-            if (method.getName().equals("equals") && method.getReturnType() == boolean.class && method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(Object.class)) {
+            if (isEqualsMethod(method)) {
                 return false;
             }
-            if (method.getName().equals("compareTo") && method.getReturnType() == int.class && method.getParameterCount() == 1) {
+            if (isCompareToMethod(method)) {
                 return 1;
             }
 
             return proxy.invokeSuper(obj, args);
+        }
+
+        private boolean isHashCodeMethod(Method method) {
+            return method.getName().equals("hashCode") && method.getReturnType() == int.class && method.getParameterCount() == 0;
+        }
+
+        private boolean isEqualsMethod(Method method) {
+            return method.getName().equals("equals") && method.getReturnType() == boolean.class && method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(Object.class);
+        }
+
+        private boolean isCompareToMethod(Method method) {
+            return method.getName().equals("compareTo") && method.getReturnType() == int.class && method.getParameterCount() == 1;
         }
     }
 }
