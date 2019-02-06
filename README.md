@@ -1,13 +1,13 @@
 # WIP: IndexedCache
 
-[![Build Status](https://travis-ci.com/alkimiapps/IndexedCache.svg?branch=master)](https://travis-ci.com/alkimiapps/IndexedCache)
+[![Build Status](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master)](https://travis-ci.org/alkimiapps/IndexedCache.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/alkimiapps/IndexedCache/badge.svg?branch=master)](https://coveralls.io/github/alkimiapps/IndexedCache?branch=master)
 
 A queryable object store with caching features.
 
 Provides an in-memory object cache (optionally with persistence) that supports a range of queries for cached objects - 
 i.e as opposed to simple key/value pair lookup.
 
-All the hard work is done by[CQEngine](https://github.com/npgall/cqengine])and whatever[JCache](https://jcp.org/en/jsr/detail?id=107)implementation you choose to use with it. All that IndexedCache does is marry the two together so that all the features
+All the hard work is done by [CQEngine](https://github.com/npgall/cqengine]) and whatever [JCache](https://jcp.org/en/jsr/detail?id=107) implementation you choose to use with it. All that IndexedCache does is marry the two together so that all the features
 provided by CQEngine are available against a store that can be configured with limits
 for things like size and expiry where provided by the associated `JCache`. 
 
@@ -28,7 +28,7 @@ associated with cache size or the number of elements in the cache. When size or 
 limit is reached then the cache will evict elements in order to make room to store new elements.
 
 The [JCache](https://jcp.org/en/jsr/detail?id=107) specification makes no provision for observation of cache 
-eviction events. (E.g. see[https://github.com/jsr107/jsr107spec/issues/403](https://github.com/jsr107/jsr107spec/issues/403))
+eviction events. (E.g. see [https://github.com/jsr107/jsr107spec/issues/403](https://github.com/jsr107/jsr107spec/issues/403))
 
 JCache supports observation of `creation`, `expiry`, `removal` and `update` event. The `removal` event
 may or may not include `eviction` - that is up to the implementation. EhCache v3 for instance does not publish a
