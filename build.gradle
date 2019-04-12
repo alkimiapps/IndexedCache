@@ -27,7 +27,7 @@ dependencies {
     implementation "cglib:cglib:3.2.10"
     implementation "org.objenesis:objenesis:3.0.1"
 
-    testCompile("org.ehcache:ehcache:3.7.0")
+    testCompile("org.ehcache:ehcache:3.7.1")
     testCompile("junit:junit:4.12")
     testCompile("org.mockito:mockito-core:2.25.1")
 }
