@@ -25,7 +25,7 @@ dependencies {
     implementation "javax.cache:cache-api:1.1.0"
     implementation "com.googlecode.cqengine:cqengine:3.0.0"
     implementation "cglib:cglib:3.2.10"
-    implementation "org.objenesis:objenesis:3.0.1"
+    implementation "org.objenesis:objenesis:3.2"
 
     testCompile("org.ehcache:ehcache:3.7.0")
     testCompile("junit:junit:4.12")
